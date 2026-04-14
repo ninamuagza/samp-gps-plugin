@@ -88,7 +88,11 @@ void Node::removeFromPath(Path* path)
 
 int Node::getPathCount() const
 {
-	return paths_.size();
+	paths_lock_.lock();
+	const auto path_count = paths_.size();
+	paths_lock_.unlock();
+
+	return path_count;
 }
 
 

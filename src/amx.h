@@ -10,6 +10,7 @@ class Amx
 {
 public:
 	Amx(AMX* amx);
+	~Amx();
 	void queueCallback(Callback* callback);
 	void processCallbacks();
 	AMX* getInternalAmx() const;

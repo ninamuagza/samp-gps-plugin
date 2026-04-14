@@ -48,7 +48,7 @@ namespace File
 			{
 				input >> id >> id2 >> direction;
 
-				if (direction != 2 && Container::Connections::Add(id, id2))
+				if (direction != 2 && Container::Connections::Add(id, id2) != INVALID_CONNECTION_ID)
 				{
 					connection_count++;
 				}
@@ -76,7 +76,12 @@ namespace File
 			return false;
 		}
 
-		for (const auto node : Container::Nodes::GetAll())
+		Container::LockShared();
+		const auto nodes = Container::Nodes::GetAll();
+		const auto connections = Container::Connections::GetAll();
+		Container::UnlockShared();
+
+		for (const auto& node : nodes)
 		{
 			if (!node.second->isSetForDeletion())
 			{
@@ -84,9 +89,9 @@ namespace File
 			}
 		}
 
-		for (const auto connection : Container::Connections::GetAll())
+		for (const auto& connection : connections)
 		{
-			file << 1 << " " << connection.second->getSource()->getID() << " " << connection.second->getTarget()->getID() << '\n';
+			file << 1 << " " << connection.second->getSource()->getID() << " " << connection.second->getTarget()->getID() << " " << 0 << '\n';
 		}
 
 		file.close();

@@ -45,5 +45,5 @@ private:
 	std::vector<Connection*> connections_;
 
 	std::vector<std::pair<Path*, int>> paths_;
-	std::mutex paths_lock_;
+	mutable std::mutex paths_lock_;
 };

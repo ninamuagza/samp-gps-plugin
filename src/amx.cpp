@@ -8,6 +8,20 @@ Amx::Amx(AMX* amx)
 }
 
 
+Amx::~Amx()
+{
+	callback_queue_lock_.lock();
+
+	for (auto callback : callback_queue_)
+	{
+		delete callback;
+	}
+
+	callback_queue_.clear();
+	callback_queue_lock_.unlock();
+}
+
+
 void Amx::queueCallback(Callback* callback)
 {
 	callback_queue_lock_.lock();
@@ -23,6 +37,7 @@ void Amx::processCallbacks()
 		for (auto callback : callback_queue_)
 		{
 			callback->call();
+			delete callback;
 		}
 
 		callback_queue_.clear();

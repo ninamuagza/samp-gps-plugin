@@ -191,7 +191,9 @@ namespace Natives
 	{
 		CHECK_PARAMS(1);
 
+		Container::LockShared();
 		auto nodes = Container::Nodes::GetAll();
+		Container::UnlockShared();
 
 		if (nodes.empty())
 		{
@@ -289,7 +291,7 @@ namespace Natives
 			}
 		}
 
-		return GPS_ERROR_INVALID_NODE;
+		return GPS_ERROR_INVALID_CONNECTION;
 	}
 
 
@@ -410,7 +412,11 @@ namespace Natives
 		auto result = INVALID_NODE_ID, id = INVALID_NODE_ID;
 		auto distance = std::numeric_limits<float>::infinity(), temp = 0.0f;
 
-		for (const auto node : Container::Nodes::GetAll())
+		Container::LockShared();
+		const auto nodes = Container::Nodes::GetAll();
+		Container::UnlockShared();
+
+		for (const auto node : nodes)
 		{
 			if (node.second->isSetForDeletion())
 			{
@@ -436,6 +442,11 @@ namespace Natives
 		cell* address = nullptr;
 		amx_GetAddr(amx, params[4], &address);
 		*address = result;
+
+		if (result == INVALID_NODE_ID)
+		{
+			return GPS_ERROR_INVALID_NODE;
+		}
 
 		return GPS_ERROR_NONE;
 	}
@@ -520,7 +531,14 @@ namespace Natives
 		char* format = nullptr;
 		amx_StrParam(amx, params[4], format);
 
-		auto callback = new Callback(AmxHandler::GetAmx(amx), callback_name, format, params, 4);
+		const auto callback_amx = AmxHandler::GetAmx(amx);
+
+		if (callback_amx == nullptr)
+		{
+			return GPS_ERROR_INTERNAL;
+		}
+
+		auto callback = new Callback(callback_amx, callback_name, format, params, 4);
 
 		try
 		{

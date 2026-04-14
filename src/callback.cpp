@@ -4,7 +4,7 @@
 #include "amx.h"
 
 
-Callback::Callback(Amx* amx, const std::string& function, const char* format, cell* params, const unsigned int param_offset)
+Callback::Callback(std::shared_ptr<Amx> amx, const std::string& function, const char* format, cell* params, const unsigned int param_offset)
 {
 	amx_ = amx;
 	function_ = function;
@@ -48,7 +48,7 @@ void Callback::setResult(const int value)
 
 Amx* Callback::getAmx() const
 {
-	return amx_;
+	return amx_.get();
 }
 
 
