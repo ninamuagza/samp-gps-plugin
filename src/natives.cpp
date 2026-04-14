@@ -535,6 +535,11 @@ namespace Natives
 
 		if (callback_amx == nullptr)
 		{
+			if (logprintf != nullptr)
+			{
+				logprintf("[GPS plugin]: Failed to create callback; AMX instance not found.");
+			}
+
 			return GPS_ERROR_INTERNAL;
 		}
 

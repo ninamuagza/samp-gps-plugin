@@ -89,9 +89,7 @@ void Node::removeFromPath(Path* path)
 int Node::getPathCount() const
 {
 	std::lock_guard<std::mutex> guard(paths_lock_);
-	const auto path_count = paths_.size();
-
-	return path_count;
+	return paths_.size();
 }
 
 

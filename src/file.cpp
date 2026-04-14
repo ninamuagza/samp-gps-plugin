@@ -88,17 +88,20 @@ namespace File
 		const auto connections = Container::Connections::GetAll();
 		Container::UnlockShared();
 
-		for (const auto& node : nodes)
+		for (const auto& [node_id, node_ptr] : nodes)
 		{
-			if (!node.second->isSetForDeletion())
+			(void)node_id;
+
+			if (!node_ptr->isSetForDeletion())
 			{
-				file << NODE_LINE_TYPE << " " << node.second->getX() << " " << node.second->getY() << " " << node.second->getZ() << " " << -1 << " " << node.second->getID() << '\n';
+				file << NODE_LINE_TYPE << " " << node_ptr->getX() << " " << node_ptr->getY() << " " << node_ptr->getZ() << " " << -1 << " " << node_ptr->getID() << '\n';
 			}
 		}
 
-		for (const auto& connection : connections)
+		for (const auto& [connection_id, connection_ptr] : connections)
 		{
-			file << CONNECTION_LINE_TYPE << " " << connection.second->getSource()->getID() << " " << connection.second->getTarget()->getID() << " " << CONNECTION_DIRECTION_FORWARD << '\n';
+			(void)connection_id;
+			file << CONNECTION_LINE_TYPE << " " << connection_ptr->getSource()->getID() << " " << connection_ptr->getTarget()->getID() << " " << CONNECTION_DIRECTION_FORWARD << '\n';
 		}
 
 		file.close();

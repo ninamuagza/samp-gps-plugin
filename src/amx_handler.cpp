@@ -47,10 +47,10 @@ namespace AmxHandler
 	void ProcessTick()
 	{
 		std::vector<std::shared_ptr<Amx>> amx_instances;
-		amx_instances.reserve(amx_list.size());
 
 		{
 			std::lock_guard<std::mutex> guard(amx_list_lock);
+			amx_instances.reserve(amx_list.size());
 
 			for (const auto& amx : amx_list)
 			{

@@ -9,6 +9,9 @@ on:
     branches:
       - "**"
 
+permissions:
+  contents: read
+
 jobs:
   build-windows-release:
     runs-on: windows-2022
