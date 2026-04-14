@@ -8,6 +8,19 @@ Amx::Amx(AMX* amx)
 }
 
 
+Amx::~Amx()
+{
+	std::lock_guard<std::mutex> guard(callback_queue_lock_);
+
+	for (auto callback : callback_queue_)
+	{
+		delete callback;
+	}
+
+	callback_queue_.clear();
+}
+
+
 void Amx::queueCallback(Callback* callback)
 {
 	callback_queue_lock_.lock();
@@ -23,6 +36,7 @@ void Amx::processCallbacks()
 		for (auto callback : callback_queue_)
 		{
 			callback->call();
+			delete callback;
 		}
 
 		callback_queue_.clear();

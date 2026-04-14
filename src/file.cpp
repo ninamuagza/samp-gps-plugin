@@ -9,6 +9,13 @@
 
 namespace File
 {
+	namespace
+	{
+		constexpr int NODE_LINE_TYPE = 0;
+		constexpr int CONNECTION_LINE_TYPE = 1;
+		constexpr int CONNECTION_DIRECTION_FORWARD = 0;
+	}
+
 	bool LoadNodes(const std::string& filename, int& line_count, int& node_count, int& connection_count)
 	{
 		std::ifstream file("scriptfiles/" + filename);
@@ -32,7 +39,7 @@ namespace File
 
 			switch (type)
 			{
-			case 0:
+			case NODE_LINE_TYPE:
 			{
 				input >> x >> y >> z >> ignore >> id;
 
@@ -44,11 +51,11 @@ namespace File
 				break;
 			}
 
-			case 1:
+			case CONNECTION_LINE_TYPE:
 			{
 				input >> id >> id2 >> direction;
 
-				if (direction != 2 && Container::Connections::Add(id, id2))
+				if (direction != 2 && Container::Connections::Add(id, id2) != INVALID_CONNECTION_ID)
 				{
 					connection_count++;
 				}
@@ -76,17 +83,25 @@ namespace File
 			return false;
 		}
 
-		for (const auto node : Container::Nodes::GetAll())
+		Container::LockShared();
+		const auto nodes = Container::Nodes::GetAll();
+		const auto connections = Container::Connections::GetAll();
+		Container::UnlockShared();
+
+		for (const auto& [node_id, node_ptr] : nodes)
 		{
-			if (!node.second->isSetForDeletion())
+			(void)node_id;
+
+			if (!node_ptr->isSetForDeletion())
 			{
-				file << 0 << " " << node.second->getX() << " " << node.second->getY() << " " << node.second->getZ() << " " << -1 << " " << node.second->getID() << '\n';
+				file << NODE_LINE_TYPE << " " << node_ptr->getX() << " " << node_ptr->getY() << " " << node_ptr->getZ() << " " << -1 << " " << node_ptr->getID() << '\n';
 			}
 		}
 
-		for (const auto connection : Container::Connections::GetAll())
+		for (const auto& [connection_id, connection_ptr] : connections)
 		{
-			file << 1 << " " << connection.second->getSource()->getID() << " " << connection.second->getTarget()->getID() << '\n';
+			(void)connection_id;
+			file << CONNECTION_LINE_TYPE << " " << connection_ptr->getSource()->getID() << " " << connection_ptr->getTarget()->getID() << " " << CONNECTION_DIRECTION_FORWARD << '\n';
 		}
 
 		file.close();
