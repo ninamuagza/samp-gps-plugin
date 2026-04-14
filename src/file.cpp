@@ -9,6 +9,13 @@
 
 namespace File
 {
+	namespace
+	{
+		constexpr int NODE_LINE_TYPE = 0;
+		constexpr int CONNECTION_LINE_TYPE = 1;
+		constexpr int CONNECTION_DIRECTION_FORWARD = 0;
+	}
+
 	bool LoadNodes(const std::string& filename, int& line_count, int& node_count, int& connection_count)
 	{
 		std::ifstream file("scriptfiles/" + filename);
@@ -32,7 +39,7 @@ namespace File
 
 			switch (type)
 			{
-			case 0:
+			case NODE_LINE_TYPE:
 			{
 				input >> x >> y >> z >> ignore >> id;
 
@@ -44,7 +51,7 @@ namespace File
 				break;
 			}
 
-			case 1:
+			case CONNECTION_LINE_TYPE:
 			{
 				input >> id >> id2 >> direction;
 
@@ -85,13 +92,13 @@ namespace File
 		{
 			if (!node.second->isSetForDeletion())
 			{
-				file << 0 << " " << node.second->getX() << " " << node.second->getY() << " " << node.second->getZ() << " " << -1 << " " << node.second->getID() << '\n';
+				file << NODE_LINE_TYPE << " " << node.second->getX() << " " << node.second->getY() << " " << node.second->getZ() << " " << -1 << " " << node.second->getID() << '\n';
 			}
 		}
 
 		for (const auto& connection : connections)
 		{
-			file << 1 << " " << connection.second->getSource()->getID() << " " << connection.second->getTarget()->getID() << " " << 0 << '\n';
+			file << CONNECTION_LINE_TYPE << " " << connection.second->getSource()->getID() << " " << connection.second->getTarget()->getID() << " " << CONNECTION_DIRECTION_FORWARD << '\n';
 		}
 
 		file.close();

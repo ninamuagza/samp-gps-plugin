@@ -10,7 +10,7 @@ Amx::Amx(AMX* amx)
 
 Amx::~Amx()
 {
-	callback_queue_lock_.lock();
+	std::lock_guard<std::mutex> guard(callback_queue_lock_);
 
 	for (auto callback : callback_queue_)
 	{
@@ -18,7 +18,6 @@ Amx::~Amx()
 	}
 
 	callback_queue_.clear();
-	callback_queue_lock_.unlock();
 }
 
 
